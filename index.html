@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div style="display: flex; justify-content: center; align-items: center;height: 100vh;">
+    <div id="content">
+      <div
+        style="font-size: 56px; position: relative; font-weight: lighter; font-family: Arial, Helvetica, sans-serif;">
+        <div>Нет данных :(</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const bearer = urlParams.get('token') ?? "4p11jWHiVNuRCRdT8bipoI9OSBkXkMiMo5rRGSENO9o"
+
+    function numberWithSpaces(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      async function init() {
+        try {
+          const _res = await fetch("https://app.salesap.ru/api/v1/account-bank-details", {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${bearer}`,
+              'Content-Type': 'application/vnd.api+json'
+            }
+          })
+          const res = await _res.json()
+          data = res.data.map((e) => (`
+            <div style="font-size: 56px; position: relative; font-weight: lighter; font-family: Arial, Helvetica, sans-serif;">
+              <div>${numberWithSpaces(e.attributes["current-balance"])} ₽</div>
+              <sup style="position: absolute; font-size: 10px; left: 0; bottom: -6px; white-space: nowrap;">${e.attributes.name}</sup>
+            </div>
+          `));
+
+          document.getElementById("content").innerHTML = data.join("")
+
+        } catch (err) { console.log(err) }
+      }
+
+      init()
+    })
+  </script>
+</body>
+
+</html>
